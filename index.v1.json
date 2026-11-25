@@ -1,4 +1,29 @@
 {
   "schema_version": 1,
-  "plugins": []
+  "plugins": [
+    {
+      "id": "nexora.filedock",
+      "name": "Nexora FileDock",
+      "description": "上传文件和目录，管理内容并通过公开链接分发。",
+      "publisher": "Nexora",
+      "releases": [
+        {
+          "version": "0.1.0",
+          "min_core_version": "0.1.0",
+          "signer_key_id": "a64e91912f4107644f580368f7023d8d0d25b627e0a2407893d3baf0c7b3d4ea",
+          "tag": "filedock-v0.1.0",
+          "icon": {
+            "name": "nexora-filedock.svg",
+            "sha256": "44e53f577b8b08b95e7cef49b5e94a545fe6fbe427d4867ca36a32d7fe59b0c8"
+          },
+          "assets": {
+            "x86_64-unknown-linux-gnu": {
+              "name": "nexora-filedock-0.1.0-linux-x86_64.nxp",
+              "sha256": "8aaaaf5f7fbaacd909583e9afaf7f43df101dbc865a016ff3ae8fc79327ba821"
+            }
+          }
+        }
+      ]
+    }
+  ]
 }
