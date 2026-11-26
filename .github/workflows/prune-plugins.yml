@@ -1,0 +1,52 @@
+name: Prune plugin versions
+
+on:
+  schedule:
+    # Sunday 04:17 in China (UTC+8).
+    - cron: '17 20 * * 6'
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Delete outdated packages (leave unchecked to preview)
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths: [.github/workflows/prune-plugins.yml, 'scripts/*.py']
+
+permissions: {}
+concurrency:
+  group: plugin-catalog-retention
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && !inputs.apply))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Test and preview retention
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 -B -m unittest discover -s scripts
+          python3 scripts/prune.py --preview
+
+  cleanup:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.apply))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+      - name: Clean outdated packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/prune.py

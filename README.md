@@ -1,41 +1,21 @@
 # nexora-plugin-registry
 
-Nexora 官方插件目录与签名插件发布仓库，供控制台浏览、安装和更新插件。控制台读取默认分支根目录的 [index.v1.json](index.v1.json)。目录不存放私钥。
+Nexora 官方签名插件仓库。控制台读取默认分支的 [index.v1.json](index.v1.json) 安装和更新插件。
 
-## 发布或补发平台
+## 手工发布或补发平台
 
-1. 在本地构建并签名 `.nxp`。保留打包工具输出的 JSON 凭据。
-2. 在本仓库创建公开、可编辑的正式 GitHub Release，上传签名包和声明的图标。新 tag 使用 `<插件 ID>-v<版本>`。已上架版本补发其他平台时沿用原 tag，只上传新平台的包，不覆盖现有附件。
-3. 在 **Actions → Publish plugin → Run workflow** 上传发布信息。先选 `preview` 查看变更和校验结果，再选 `publish` 自动上架和清理。
+1. 在本地构建并签名 `.nxp`，保存打包工具输出的 JSON 凭据。签名私钥不进入此仓库。
+2. 创建公开、可编辑的正式 GitHub Release，上传签名包和声明的图标。新 tag 使用 `<插件 ID>-v<版本>`。给已有版本补发新平台时，沿用原 tag 和图标，只上传新平台包，不覆盖旧附件。
+3. 手工更新 `index.v1.json`。新版本从凭据填写版本、签名者指纹和平台的文件名、SHA-256，另填 tag 和最低 Core 版本。补发只在原版本的 `assets` 中新增目标平台。可参考 [现有索引](index.v1.json) 的格式。
 
-`submission` 输入为以下结构。`packages` 是一份或多份本地打包工具输出的完整 JSON。首次上架还需提供包含 `name`、`description`、`publisher` 的 `plugin` 对象。补发平台时，最低 Core 版本、签名者、图标和 tag 必须与原版本相同。
+上架不会触发清理。需要校验时，可以在本地使用 [Nexora 的目录校验命令](https://github.com/ConRaD-1009/nexora/blob/main/docs/plugin-marketplace.md#发布目录和制品)。
 
-```json
-{
-  "tag": "nexora.filedock-v0.1.2",
-  "min_core_version": "0.1.0",
-  "packages": [
-    {
-      "id": "nexora.filedock",
-      "version": "0.1.2",
-      "target": "x86_64-unknown-linux-gnu",
-      "key_id": "<签名公钥指纹>",
-      "name": "nexora-filedock-0.1.2-linux-x86_64.nxp",
-      "archive_sha256": "<包的 SHA-256>",
-      "icon": {"name": "nexora-filedock.svg", "sha256": "<图标的 SHA-256>"}
-    }
-  ]
-}
-```
+## 定时清理
 
-工作流固定使用 [Nexora 主仓库](https://github.com/ConRaD-1009/nexora) 的一个完整提交 SHA 校验包。升级验证器时，在 workflow 中更新该 SHA。工作流必须能推送到 `main` 和管理本仓库的 Release。发布时不要并行手工修改索引、Release 或 tag。
+**Prune plugin versions** 每周日北京时间 **04:17** 运行，按插件和完整目标平台各保留最近 5 个稳定 SemVer。在下次清理前，超过 5 版属于正常情况。
 
-主仓库是私有仓库。本仓库需要名为 `NEXORA_CORE_READ_TOKEN` 的 GitHub Actions 仓库 Secret。使用细粒度 GitHub token，只选择 `ConRaD-1009/nexora` 并授予 `Contents: Read`。它只用于拉取验证器源代码，不是签包私钥，也不需要写权限。
+清理先提交新索引，再删除确认不再被索引引用的本仓库附件。还有其他平台在用的 Release 会保留图标。仅在不再被引用且没有其他用途的专用 Release 才会连同 tag 删除。不会删除外部仓库的附件或尚未上架的上传文件。
 
-留空提交信息并选择 `preview`，可以审计当前索引的所有包和保留数量。发布工作流或脚本更新到 `main` 时，也会自动运行一次只读审计。
+可以在 [Actions → Prune plugin versions](https://github.com/ConRaD-1009/nexora-plugin-registry/actions/workflows/prune-plugins.yml) 手动运行。选 `main`，保留 `apply` 未勾选即可预览。勾选 `apply` 才会实际清理。清理中断后，下次定时或手工清理会继续处理待删清单。
 
-## 保留与清理
-
-每个插件的每种平台各保留最近 5 个稳定 SemVer。工作流先提交索引，再自动删除淘汰的本仓库附件。仍有其他平台使用的 Release 和图标会保留。没有使用方的专用 Release 和 tag 才会一起删除。工作流不会删除外部仓库的附件，也不会清理从未上架的上传文件。
-
-如果清理中断，在 Actions 选择 `retry-cleanup`，无需填写发布信息。清理会继续处理已提交的待删清单，并重新检查索引中的引用。
+工作流只用本仓库的 `GITHUB_TOKEN`，不读取私有 Core。若之前保存了 `NEXORA_CORE_READ_TOKEN`，可以删掉这个 Secret。公开仓库若连续 60 天没有活动，GitHub 会自动停用定时任务，可在 Actions 重新启用。
