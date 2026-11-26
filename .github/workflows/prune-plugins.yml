@@ -2,8 +2,8 @@ name: Prune plugin versions
 
 on:
   schedule:
-    # Sunday 04:17 in China (UTC+8).
-    - cron: '17 20 * * 6'
+    # Sunday 03:15 in China (UTC+8).
+    - cron: '15 19 * * 6'
   workflow_dispatch:
     inputs:
       apply:
