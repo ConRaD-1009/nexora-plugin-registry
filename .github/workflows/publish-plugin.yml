@@ -45,11 +45,20 @@ jobs:
           else
             python3 scripts/publish.py prepare "$RUNNER_TEMP/prepared"
           fi
+      - name: Require read access to the private validator repository
+        env:
+          CORE_READ_TOKEN: ${{ secrets.NEXORA_CORE_READ_TOKEN }}
+        run: |
+          if [[ -z "$CORE_READ_TOKEN" ]]; then
+            echo 'Set the NEXORA_CORE_READ_TOKEN Actions secret with Contents: Read access to ConRaD-1009/nexora.' >&2
+            exit 1
+          fi
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: ConRaD-1009/nexora
           ref: 43f3026cf762c17fe8b19f83d7973d95cad9396d
           path: nexora-validator
+          token: ${{ secrets.NEXORA_CORE_READ_TOKEN }}
           persist-credentials: false
       - name: Verify every new platform package
         env:

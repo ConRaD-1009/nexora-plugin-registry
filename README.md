@@ -30,6 +30,8 @@ Nexora 官方插件目录与签名插件发布仓库，供控制台浏览、安�
 
 工作流固定使用 [Nexora 主仓库](https://github.com/ConRaD-1009/nexora) 的一个完整提交 SHA 校验包。升级验证器时，在 workflow 中更新该 SHA。工作流必须能推送到 `main` 和管理本仓库的 Release。发布时不要并行手工修改索引、Release 或 tag。
 
+主仓库是私有仓库。本仓库需要名为 `NEXORA_CORE_READ_TOKEN` 的 GitHub Actions 仓库 Secret。使用细粒度 GitHub token，只选择 `ConRaD-1009/nexora` 并授予 `Contents: Read`。它只用于拉取验证器源代码，不是签包私钥，也不需要写权限。
+
 留空提交信息并选择 `preview`，可以审计当前索引的所有包和保留数量。发布工作流或脚本更新到 `main` 时，也会自动运行一次只读审计。
 
 ## 保留与清理
