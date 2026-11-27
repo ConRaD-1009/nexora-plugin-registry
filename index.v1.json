@@ -38,6 +38,22 @@
               "sha256": "918bbf78aea8e155b3d34ac782c7d0681c24f4c628ce7abdf72e5213807540d0"
             }
           }
+        },
+        {
+          "version": "0.1.2",
+          "min_core_version": "0.1.0",
+          "signer_key_id": "a64e91912f4107644f580368f7023d8d0d25b627e0a2407893d3baf0c7b3d4ea",
+          "tag": "nexora.filedock-v0.1.2",
+          "icon": {
+            "name": "nexora-filedock.svg",
+            "sha256": "44e53f577b8b08b95e7cef49b5e94a545fe6fbe427d4867ca36a32d7fe59b0c8"
+          },
+          "assets": {
+            "x86_64-unknown-linux-gnu": {
+              "name": "nexora-filedock-0.1.2-linux-x86_64.nxp",
+              "sha256": "acd58c72edbb887bbb2bc69172d4a22520658721aee7a9159882dde94249483e"
+            }
+          }
         }
       ]
     }
